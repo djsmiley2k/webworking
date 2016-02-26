@@ -28,10 +28,6 @@ if($history) {
         }
 }
 
-var_dump($history);
-echo '<hr>';
-
-
 
 if ($traffic) {
 	$readValues = array_filter(explode(PHP_EOL, $traffic));
@@ -43,16 +39,7 @@ if ($traffic) {
 	}
 	$upValues = array_slice($upValues,0,25);
 	$downValues = array_slice($downValues,0,25);
-	echo '<br> upValues: ';
-	var_dump($upValues);
-	echo '<br> downValues: ';
-	var_dump($downValues);
 }
-
-echo '<hr>';
-echo 'Downstream Usage: ' . round($downValues[0]/1024, 2) . 'kb/s ';
-echo '<br>';
-echo 'Upstream Usage: ' . round($upValues[0]/1024, 2) . 'kb/s ';
 
 
 // Save out $upValues and $downValues arrays to file
