@@ -1,13 +1,22 @@
+#!/usr/bin/php -q
 <?php
+$historyCount = 25;
 
 $trafficFile = '/backups/router/traffic';
-$trafficHistory = '/var/www/localhost/htdocs/milkme.co.uk/trafficHistory';
+
+$trafficHistoryUP = '/var/www/localhost/htdocs/milkme.co.uk/trafficHistoryUP';
+$trafficHistoryDOWN = '/var/www/localhost/htdocs/milkme.co.uk/trafficHistoryDOWN';
 
 $traffic = file_get_contents($trafficFile) or die("Cannot open " . $trafficFile);
 
-$storedValues = fopen($trafficHistory, "r") or die ("Cannot open " . $trafficHistory);
-$history = array_filter(explode(PHP_EOL, json_decode(fread($storedValues, filesize($trafficHistory)))));
-fclose($storedValues);
+$storedValuesUP = fopen($trafficHistoryUP, "r") or die ("Cannot open " . $trafficHistoryUP);
+$storedValuesDOWN = fopen($trafficHistoryDOWN, "r") or die ("Cannot open " . $trafficHistoryDOWN);
+
+$historyUP = json_decode(fread($storedValuesUP, filesize($trafficHistoryUP)));
+$historyDOWN = json_decode(fread($storedValuesDOWN, filesize($trafficHistoryDOWN)));
+
+fclose($storedValuesUP);
+fclose($storedValuesDOWN);
 
 // Read history Values into arrays
 
@@ -15,15 +24,15 @@ $upValues[] = '';
 $downValues[] = '';
 
 
-if($history) {
+if($historyUP && $historyDOWN) {
         $x = 0;
-        while ($x < 25) { // 0 - 4
-                $upValues[$x] = $history[$x];
+        while ($x <= ($historyCount - 1)) {
+                $upValues[$x] = $historyUP[$x];
                 $x++;
         }
-
-        while ($x < 50) { // 5 - 9
-                $downValues[($x -5)] =  $history[$x];
+	$x = 0;
+        while ($x <= ($historyCount - 1)) {
+                $downValues[$x] =  $historyDOWN[$x];
                 $x++;
         }
 }
@@ -43,8 +52,7 @@ if ($traffic) {
 
 
 // Save out $upValues and $downValues arrays to file
-$data = implode(PHP_EOL,array_filter($upValues)) . "\n" . implode(PHP_EOL,array_filter($downValues));
-file_put_contents($trafficHistory, json_encode($data));
+file_put_contents($trafficHistoryUP, json_encode($upValues));
+file_put_contents($trafficHistoryDOWN, json_encode($downValues));
 
 ?>
-

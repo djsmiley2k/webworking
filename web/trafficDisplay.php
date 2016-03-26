@@ -14,4 +14,3 @@ echo '<br>';
 echo 'Upstream Usage: ' . round($readValues[1]/1024, 2) . 'kb/s ';
 
 ?>
-
